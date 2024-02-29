@@ -1,16 +1,28 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.5.2 (swiftlang-1300.0.47.5 clang-1300.0.29.30)
-// swift-module-flags: -target arm64-apple-ios9.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name UnityAds
+// swift-compiler-version: Apple Swift version 5.8.1 (swiftlang-5.8.0.124.5 clang-1403.0.22.11.100)
+// swift-module-flags: -target arm64-apple-ios10.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name UnityAds
+// swift-module-flags-ignorable: -enable-bare-slash-regex
+import AVFAudio
+import AVFoundation
+import AdSupport
+import AppTrackingTransparency
+import AudioToolbox.AudioServices
+import AudioToolbox
 import CommonCrypto
+import CoreMotion
 import CoreTelephony
 import CryptoKit
 import Foundation
+import Network
 import QuartzCore
+import StoreKit
 import Swift
+import SystemConfiguration
 import UIKit
 @_exported import UnityAds
 import WebKit
 import _Concurrency
+import _StringProcessing
 import zlib
 @_hasMissingDesignatedInitializers @objc final public class SDKConfigurationStorageObjcBridge : ObjectiveC.NSObject {
   @objc final public var configDictionary: [Swift.String : Any] {
@@ -21,7 +33,8 @@ import zlib
 }
 public struct SDKInitializerConfig {
   public let gameID: Swift.String
-  public init(gameID: Swift.String)
+  public let isTestModeEnabled: Swift.Bool
+  public init(gameID: Swift.String, isTestModeEnabled: Swift.Bool)
 }
 extension Foundation.Data {
   public var isGzipped: Swift.Bool {
@@ -65,16 +78,24 @@ extension Swift.Result {
   @inlinable public func sink(_ completion: @escaping (Swift.Result<Success, Failure>) -> Swift.Void) {
         completion(self)
     }
+  @inlinable public func sink(_ completion: ((Swift.Result<Success, Failure>) -> Swift.Void)?) {
+        completion?(self)
+    }
   @inlinable public func recover(_ transform: (Failure) -> Success) -> Swift.Result<Success, Failure> {
         if case .failure(let err) = self {
             return .success(transform(err))
         }
         return self
     }
+  @inlinable public func getValue(_ transform: (Failure) -> Success) -> Success {
+        switch self {
+        case .success(let success): return success
+        case .failure( let error): return transform(error)
+        }
+    }
 }
-extension Swift.Result where Failure == Swift.Error {
+extension Swift.Result where Failure == any Swift.Error {
   @inlinable public func tryMap<NewSuccess>(_ transform: (Success) throws -> NewSuccess) -> Swift.Result<NewSuccess, Failure> {
-
         switch self {
         case let .success(val):
             do {
@@ -105,15 +126,4 @@ extension Swift.Result where Failure == Swift.Error {
   @objc final public func log(_ message: Swift.String)
   @objc override dynamic public init()
   @objc deinit
-}
-public protocol URLRequestConvertible {
-  var baseURL: Swift.String { get }
-  var path: Swift.String { get }
-  var parameters: [Swift.String : Swift.String] { get }
-  var headers: [Swift.String : Swift.String] { get }
-  var body: Foundation.Data? { get }
-  var method: Swift.String { get }
-  var scheme: Swift.String? { get }
-  var port: Swift.Int? { get }
-  var requestTimeout: Foundation.TimeInterval? { get }
 }
