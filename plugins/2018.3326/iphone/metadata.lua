@@ -5,7 +5,7 @@ local metadata =
 		format = 'staticLibrary',
 		staticLibs = { 'APDUnityAdapter', },
 		frameworks = { 'UnityAds', },
-		frameworksOptional = {},
+		frameworksOptional = {"Network"},
 	},
 }
 
