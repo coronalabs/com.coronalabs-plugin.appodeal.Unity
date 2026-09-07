@@ -3,9 +3,9 @@ local metadata =
 	plugin =
 	{
 		format = 'staticLibrary',
-		staticLibs = { 'APDUnityAdapter', },
-		frameworks = { 'UnitySDK', },
-		frameworksOptional = {"Network"},
+		staticLibs = { 'AppodealUnityAdapter' },
+		frameworks = { 'UnityAds' },
+		frameworksOptional = { 'Network' },
 	},
 }
 
